@@ -7,7 +7,7 @@
                       PublicPolicyUri="http://yourtenant.onmicrosoft.com/B2C_1A_Invitation">
   <BasePolicy>
     <TenantId>yourtenant.onmicrosoft.com</TenantId>
-    <PolicyId>B2C_1A_Extensions</PolicyId>
+    <PolicyId>B2C_1A_TrustFrameworkExtensions</PolicyId>
   </BasePolicy>
 
   <BuildingBlocks>
@@ -225,7 +225,7 @@
       <DisplayName>PolicyProfile</DisplayName>
       <Protocol Name="OpenIdConnect" />
       <CryptographicKeys>
-        <Key Id="client_secret" StorageReferenceId="B2C_1A_InvitationTokenSigningKey" />
+        <Key Id="client_secret" StorageReferenceId="B2C_1A_InvitationSigningKey" />
       </CryptographicKeys>
       <InputClaims>
         <InputClaim ClaimTypeReferenceId="invitedEmail" PartnerClaimType="email" Required="true" />
