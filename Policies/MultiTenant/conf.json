@@ -5,7 +5,7 @@
     "SignInOnly_UI": "https://b2cdatastore.blob.core.windows.net/uix/SignInOnly.html",
     "RestTenantCreate": "https://mrmtrestapi.azurewebsites.net/tenant",
     "RestGetOrJoinTenant": "https://b2crestapis.azurewebsites.net/tenant/member",
-    "RestGetTenantForUser": "https://b2crestapis.azurewebsites.net/tenant/currmember",
+    "RestGetTenantForUser": "https://mrmtrestapi.azurewebsites.net/tenant/currmember",
     "RestGetFirstTenant": "https://b2crestapis.azurewebsites.net/tenant/first",
     "AADCommonAppId": "b4d453c6-369e-4551-8580-177a0043d595",    
     "AADCommonSecret": "B2C_1A_AADCommonSecret",

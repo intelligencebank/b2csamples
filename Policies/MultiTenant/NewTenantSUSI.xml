@@ -227,7 +227,6 @@
         <OutputClaim ClaimTypeReferenceId="appTenantId" />  
         <OutputClaim ClaimTypeReferenceId="appTenantRoles" PartnerClaimType="roles" />     
         <OutputClaim ClaimTypeReferenceId="allTenants"  /> 
-        <OutputClaim ClaimTypeReferenceId="identityProvider" />  
       </OutputClaims>
       <SubjectNamingInfo ClaimType="sub" />
     </TechnicalProfile>
