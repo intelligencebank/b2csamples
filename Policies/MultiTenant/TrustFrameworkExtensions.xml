@@ -14,6 +14,19 @@
   </BasePolicy>
   <BuildingBlocks>
     <ClaimsSchema>
+      <ClaimType Id="KMSI">
+        <DisplayName>KMSI Flag</DisplayName>
+        <DataType>string</DataType>
+      </ClaimType>  
+      <ClaimType Id="requireEditProfile">
+        <DisplayName>Use request parameter to request profile edit UI</DisplayName>
+        <DataType>string</DataType>
+      </ClaimType>        
+      <ClaimType Id="isForgotPassword">
+        <DisplayName>isForgotPassword</DisplayName>
+        <DataType>boolean</DataType>
+        <AdminHelpText>Whether the user has selected Forgot your Password</AdminHelpText>
+      </ClaimType>        
       <ClaimType Id="appTenantDescription">
         <DisplayName>Tenant description</DisplayName>
         <DataType>string</DataType>
@@ -41,23 +54,10 @@
           <Pattern RegularExpression="^[A-Za-z_$][A-Za-z_$0-9]*$" HelpText="Please enter a valid tenant name (alpha and digits)." />
         </Restriction>         
       </ClaimType> 
-      <ClaimType Id="appTenants">
-        <DisplayName>List of tenant names</DisplayName>
+      <ClaimType Id="allTenants">
+        <DisplayName>List of tenants (names) where user is an admin</DisplayName>
         <DataType>stringCollection</DataType>
-        <UserHelpText>List of tenant names</UserHelpText>
-        <UserInputType>Readonly</UserInputType>
       </ClaimType>   
-      <ClaimType Id="appTenantIds">
-        <DisplayName>List of tenant ids</DisplayName>
-        <DataType>stringCollection</DataType>
-        <UserHelpText>List of tenant ids</UserHelpText>
-        <UserInputType>Readonly</UserInputType>
-      </ClaimType>           
-      <ClaimType Id="appTenantSelection">
-        <DisplayName>Select application tenant</DisplayName>
-        <DataType>string</DataType>
-        <UserInputType>DropdownSingleSelect</UserInputType>
-      </ClaimType>     
       <ClaimType Id="isNewMember">
         <DisplayName>User joined an app tenant</DisplayName>
         <DataType>boolean</DataType>
@@ -81,19 +81,21 @@
         <DataType>boolean</DataType>
       </ClaimType>             
     </ClaimsSchema>
-    <!--ContentDefinitions>
+    <ContentDefinitions>
       <ContentDefinition Id="api.signuporsignin">
-          <LoadUri>{SUSI_UI}</LoadUri>
-      </ContentDefinition>   
-      <ContentDefinition Id="api.signinonly">
-          <LoadUri>{SignInOnly_UI}</LoadUri>
-          <RecoveryUri>~/common/default_page_error.html</RecoveryUri>
-          <DataUri>urn:com:microsoft:aad:b2c:elements:unifiedssp:1.0.0</DataUri>
-          <Metadata>
-            <Item Key="DisplayName">Signin</Item>
-          </Metadata>         
-      </ContentDefinition>                      
-    </ContentDefinitions-->    
+        <DataUri>urn:com:microsoft:aad:b2c:elements:contract:unifiedssp:2.1.2</DataUri>
+      </ContentDefinition>
+    </ContentDefinitions>    
+    <Localization Enabled="true">
+      <SupportedLanguages DefaultLanguage="en" MergeBehavior="ReplaceAll">
+        <SupportedLanguage>en</SupportedLanguage>
+      </SupportedLanguages>
+      <LocalizedResources Id="api.signuporsignin.en">
+        <LocalizedStrings>
+          <LocalizedString ElementType="UxElement" StringId="remember_me">Edit my profile</LocalizedString>
+        </LocalizedStrings>
+      </LocalizedResources>
+    </Localization>       
   </BuildingBlocks>
 
   
@@ -188,8 +190,9 @@
             <InputClaim ClaimTypeReferenceId="allowSameIssuerMembersString" DefaultValue="no" />                   
           </InputClaims>
           <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="appTenantId" PartnerClaimType="id" />
-            <OutputClaim ClaimTypeReferenceId="appTenantRoles" PartnerClaimType="roles" />            
+            <OutputClaim ClaimTypeReferenceId="appTenantId" PartnerClaimType="tenantId" />
+            <OutputClaim ClaimTypeReferenceId="appTenantRoles" PartnerClaimType="roles" />    
+            <OutputClaim ClaimTypeReferenceId="allTenants"  /> 
           </OutputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>
@@ -213,7 +216,7 @@
             <OutputClaim ClaimTypeReferenceId="appTenantName" PartnerClaimType="name" />            
             <OutputClaim ClaimTypeReferenceId="appTenantRoles" PartnerClaimType="roles" />
             <OutputClaim ClaimTypeReferenceId="requireMFA" />            
-            <OutputClaim ClaimTypeReferenceId="appTenants" PartnerClaimType="allTenants" />              
+            <OutputClaim ClaimTypeReferenceId="allTenants" />      
           </OutputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>   
@@ -241,7 +244,7 @@
             <OutputClaim ClaimTypeReferenceId="appTenantName" PartnerClaimType="name" />
             <OutputClaim ClaimTypeReferenceId="newUser" />            
             <OutputClaim ClaimTypeReferenceId="requireMFA" />
-            <OutputClaim ClaimTypeReferenceId="appTenants" PartnerClaimType="allTenants" />            
+            <OutputClaim ClaimTypeReferenceId="allTenants" />     
           </OutputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>         
@@ -367,6 +370,69 @@
         </TechnicalProfile>
       </TechnicalProfiles>
     </ClaimsProvider>
+
+    <ClaimsProvider>
+      <DisplayName>Local Account</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-Email">
+          <Metadata>
+            <Item Key="setting.forgotPasswordLinkOverride">ForgotPasswordExchange</Item>            
+            <Item Key="setting.enableRememberMe">True</Item>
+            <Item Key="IncludeClaimResolvingInClaimsHandling">true</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="signInName" DefaultValue="{OIDC:LoginHint}" />
+          </InputClaims>  
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="local" AlwaysUseDefaultValue="true" />            
+          </OutputClaims>        
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="GetClaimsResolvers">
+          <DisplayName>Get claimsresolvers values</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="IncludeClaimResolvingInClaimsHandling">True</Item>
+          </Metadata>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="KMSI" DefaultValue="{Context:KMSI}" AlwaysUseDefaultValue="true" />       
+          </OutputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>     
+        
+        <TechnicalProfile Id="ForgotPassword">
+          <DisplayName>Forgot your password?</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="isForgotPassword" DefaultValue="true" AlwaysUseDefaultValue="true"/>
+          </OutputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+      
+      </TechnicalProfiles>
+    </ClaimsProvider>  
+  
   </ClaimsProviders>
+
+
+  <SubJourneys>
+    <SubJourney Id="PasswordReset" Type="Call">
+      <OrchestrationSteps>
+        <!-- Validate user's email address. -->
+        <OrchestrationStep Order="1" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="PasswordResetUsingEmailAddressExchange" TechnicalProfileReferenceId="LocalAccountDiscoveryUsingEmailAddress" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+
+        <!-- Collect and persist a new password. -->
+        <OrchestrationStep Order="2" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="NewCredentials" TechnicalProfileReferenceId="LocalAccountWritePasswordUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+      </OrchestrationSteps>
+    </SubJourney>
+  </SubJourneys>  
 
 </TrustFrameworkPolicy>

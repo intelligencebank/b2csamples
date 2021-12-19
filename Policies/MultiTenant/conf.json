@@ -3,7 +3,7 @@
     "Prefix": "MT",
     "SUSI_UI": "https://b2cdatastore.blob.core.windows.net/uix/IdPSelect.html",
     "SignInOnly_UI": "https://b2cdatastore.blob.core.windows.net/uix/SignInOnly.html",
-    "RestTenantCreate": "https://b2crestapis.azurewebsites.net/tenant",
+    "RestTenantCreate": "https://mrmtrestapi.azurewebsites.net/tenant",
     "RestGetOrJoinTenant": "https://b2crestapis.azurewebsites.net/tenant/member",
     "RestGetTenantForUser": "https://b2crestapis.azurewebsites.net/tenant/currmember",
     "RestGetFirstTenant": "https://b2crestapis.azurewebsites.net/tenant/first",

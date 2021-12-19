@@ -13,80 +13,6 @@
     <PolicyId>B2C_1A_TrustFrameworkExtensions</PolicyId>
   </BasePolicy>
 
-  <BuildingBlocks>
-    <ClaimsSchema>
-      <ClaimType Id="KMSI">
-        <DisplayName>KMSI Flag</DisplayName>
-        <DataType>string</DataType>
-      </ClaimType>  
-      <ClaimType Id="requireEditProfile">
-        <DisplayName>Use request parameter to request profile edit UI</DisplayName>
-        <DataType>string</DataType>
-      </ClaimType>        
-      <ClaimType Id="isForgotPassword">
-        <DisplayName>isForgotPassword</DisplayName>
-        <DataType>boolean</DataType>
-        <AdminHelpText>Whether the user has selected Forgot your Password</AdminHelpText>
-      </ClaimType>      
-    </ClaimsSchema>
-    <ContentDefinitions>
-      <ContentDefinition Id="api.signuporsignin">
-        <DataUri>urn:com:microsoft:aad:b2c:elements:contract:unifiedssp:2.1.2</DataUri>
-      </ContentDefinition>
-    </ContentDefinitions>    
-    <Localization Enabled="true">
-      <SupportedLanguages DefaultLanguage="en" MergeBehavior="ReplaceAll">
-        <SupportedLanguage>en</SupportedLanguage>
-      </SupportedLanguages>
-      <LocalizedResources Id="api.signuporsignin.en">
-        <LocalizedStrings>
-          <LocalizedString ElementType="UxElement" StringId="remember_me">Edit my profile</LocalizedString>
-        </LocalizedStrings>
-      </LocalizedResources>
-    </Localization>     
-  </BuildingBlocks>  
-
-  <ClaimsProviders>
-    <ClaimsProvider>
-      <DisplayName>Local Account</DisplayName>
-      <TechnicalProfiles>
-        <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-Email">
-          <Metadata>
-            <Item Key="setting.forgotPasswordLinkOverride">ForgotPasswordExchange</Item>            
-            <Item Key="setting.enableRememberMe">True</Item>
-            <Item Key="IncludeClaimResolvingInClaimsHandling">true</Item>
-          </Metadata>
-          <InputClaims>
-            <InputClaim ClaimTypeReferenceId="signInName" DefaultValue="{OIDC:LoginHint}" />
-          </InputClaims>          
-        </TechnicalProfile>
-
-        <TechnicalProfile Id="GetClaimsResolvers">
-          <DisplayName>Get claimsresolvers values</DisplayName>
-          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
-          <Metadata>
-            <Item Key="IncludeClaimResolvingInClaimsHandling">True</Item>
-          </Metadata>
-          <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="KMSI" DefaultValue="{Context:KMSI}" AlwaysUseDefaultValue="true" />       
-          </OutputClaims>
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
-        </TechnicalProfile>     
-        
-        <TechnicalProfile Id="ForgotPassword">
-          <DisplayName>Forgot your password?</DisplayName>
-          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.ClaimsTransformationProtocolProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
-          <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="isForgotPassword" DefaultValue="true" AlwaysUseDefaultValue="true"/>
-          </OutputClaims>
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
-        </TechnicalProfile>
-      
-      </TechnicalProfiles>
-    </ClaimsProvider>  
-  </ClaimsProviders>  
-
-
   <UserJourneys>
     <!-- Jurney for existing user or new AAD users of app tenants allowing autojoin by other emebers. Does not allow UI entry of tenant name -->
     <UserJourney Id="SignIn">
@@ -261,7 +187,7 @@
         <OutputClaim ClaimTypeReferenceId="appTenantName" />
         <OutputClaim ClaimTypeReferenceId="appTenantId" />
         <OutputClaim ClaimTypeReferenceId="appTenantRoles" PartnerClaimType="roles" /> 
-        <OutputClaim ClaimTypeReferenceId="appTenants" PartnerClaimType="allTenants"/> 
+        <OutputClaim ClaimTypeReferenceId="allTenants" />         
         <OutputClaim ClaimTypeReferenceId="identityProvider" />      
       </OutputClaims>
       <SubjectNamingInfo ClaimType="sub" />
