@@ -13,6 +13,39 @@
     <PolicyId>B2C_1A_TrustFrameworkExtensions</PolicyId>
   </BasePolicy>
 
+  <ClaimsProvider>
+    <DisplayName>Self asserted</DisplayName>
+    <TechnicalProfiles>
+      <TechnicalProfile Id="ShowBlockPage">
+        <DisplayName>Show Block message</DisplayName>
+        <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"/>
+        <Metadata>
+          <Item Key="ContentDefinitionReferenceId">api.selfasserted</Item>
+          <Item Key="TokenLifeTimeInSeconds">3600</Item>
+          <Item Key="AllowGenerationOfClaimsWithNullValues">true</Item>
+          <Item Key="setting.showContinueButton">false</Item>
+          <Item Key="setting.showCancelButton">false</Item>
+        </Metadata>
+        <CryptographicKeys>
+          <Key Id="issuer_secret" StorageReferenceId="B2C_1A_TokenSigningKeyContainer" />
+        </CryptographicKeys>
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="responseMsg" DefaultValue="You are not a member of any tenant. You must either create a new tenant or be invited to an existing one."/>
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="responseMsg"/>
+        </OutputClaims>
+        <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop"/>
+        <EnabledForUserJourneys>Always</EnabledForUserJourneys>
+      </TechnicalProfile>    
+      <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-Email">
+        <ValidationTechnicalProfiles>
+          <ValidationTechnicalProfile ReferenceId="REST-GetTenantsForUser" />
+        </ValidationTechnicalProfiles>
+      </TechnicalProfile>    
+    </TechnicalProfiles>
+  </ClaimsProvider>
+
   <UserJourneys>
     <!-- Jurney for existing user or new AAD users of app tenants allowing autojoin by other emebers. Does not allow UI entry of tenant name -->
     <UserJourney Id="SignIn">
@@ -40,7 +73,7 @@
             <ClaimsExchange Id="GoogleExchange" TechnicalProfileReferenceId="Google-OAUTH" />    
             <ClaimsExchange Id="ForgotPasswordExchange" TechnicalProfileReferenceId="ForgotPassword" />                  
           </ClaimsExchanges>
-        </OrchestrationStep>  
+        </OrchestrationStep>          
         <OrchestrationStep Order="3" Type="InvokeSubJourney">
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
@@ -64,9 +97,21 @@
             <ClaimsExchange Id="AADUserReadUsingAlternativeSecurityId" TechnicalProfileReferenceId="AAD-UserReadUsingAlternativeSecurityId-NoError" />
           </ClaimsExchanges>
         </OrchestrationStep>
+        <!-- New social users, except AAD cannot sign in -->
+        <OrchestrationStep Order="5" Type="ClaimsExchange">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>objectId</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="BlockUser" TechnicalProfileReferenceId="ShowBlockPage" />
+          </ClaimsExchanges>
+        </OrchestrationStep>          
         <!-- This step reads any user attributes that we may not have received when authenticating using ESTS so they can be sent 
           in the token. -->
-        <OrchestrationStep Order="5" Type="ClaimsExchange">
+        <OrchestrationStep Order="6" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
               <Value>authenticationSource</Value>
@@ -78,13 +123,13 @@
             <ClaimsExchange Id="AADUserReadWithObjectId" TechnicalProfileReferenceId="AAD-UserReadUsingObjectId" />
           </ClaimsExchanges>
         </OrchestrationStep>
-        <OrchestrationStep Order="6" Type="ClaimsExchange">
+        <OrchestrationStep Order="7" Type="ClaimsExchange">
           <ClaimsExchanges>
             <ClaimsExchange Id="GetTenantData" TechnicalProfileReferenceId="REST-GetTenantForUser" />
           </ClaimsExchanges>
         </OrchestrationStep> 
         <!-- If this is an AAD user and the tenant allows uninvited same-directory users, this user may not yet exist in B2C. Create /-->
-        <OrchestrationStep Order="7" Type="ClaimsExchange">
+        <OrchestrationStep Order="8" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
               <Value>identityProvider</Value>
@@ -98,7 +143,7 @@
         </OrchestrationStep>        
         <!-- Phone verification: If MFA is not required, the next three steps (#5-#7) should be removed.
               This step checks whether there's a phone number on record,  for the user. If found, then the user is challenged to verify it. -->
-        <OrchestrationStep Order="8" Type="ClaimsExchange">
+        <OrchestrationStep Order="9" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
               <Value>isActiveMFASession</Value>
@@ -118,7 +163,7 @@
         <!-- Save MFA phone number: The precondition verifies whether the user provided a new number in the 
               previous step. If so, then the phone number is stored in the directory for future authentication 
               requests. -->
-        <OrchestrationStep Order="9" Type="ClaimsExchange">
+        <OrchestrationStep Order="10" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
               <Value>newPhoneNumberEntered</Value>
@@ -129,7 +174,7 @@
             <ClaimsExchange Id="AADUserWriteWithObjectId" TechnicalProfileReferenceId="AAD-UserWritePhoneNumberUsingObjectId" />
           </ClaimsExchanges>
         </OrchestrationStep>   
-        <OrchestrationStep Order="10" Type="ClaimsExchange">
+        <OrchestrationStep Order="11" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
               <Value>newUser</Value>
@@ -145,7 +190,7 @@
             <ClaimsExchange Id="B2CUserProfileUpdateExchange" TechnicalProfileReferenceId="SelfAsserted-ProfileUpdate" />
           </ClaimsExchanges>
         </OrchestrationStep>                  
-        <OrchestrationStep Order="11" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+        <OrchestrationStep Order="12" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
   
       </OrchestrationSteps>
       <ClientDefinition ReferenceId="DefaultWeb" />

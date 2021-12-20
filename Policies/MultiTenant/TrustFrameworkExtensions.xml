@@ -220,11 +220,11 @@
           </OutputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>   
-        <TechnicalProfile Id="REST-GetTenantForUser">
+        <TechnicalProfile Id="REST-GetTenantsForUser">
           <DisplayName>Get user role</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
           <Metadata>
-            <Item Key="ServiceUrl">{RestGetTenantForUser}</Item>
+            <Item Key="ServiceUrl">{RestGetTenantsForUser}</Item>
             <Item Key="AuthenticationType">ClientCertificate</Item>
             <Item Key="SendClaimsIn">Body</Item>
             <!--Item Key="AllowInsecureAuthInProduction">true</Item-->            
