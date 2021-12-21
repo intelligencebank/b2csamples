@@ -4,6 +4,7 @@
     "SUSI_UI": "https://b2cdatastore.blob.core.windows.net/uix/IdPSelect.html",
     "SignInOnly_UI": "https://b2cdatastore.blob.core.windows.net/uix/SignInOnly.html",
     "RestTenantCreate": "https://mrmtrestapi.azurewebsites.net/tenant",
+    "RestIsSignupAllowed": "https://mrmtrestapi.azurewebsites.net/tenant/issignupallowed",
     "RestGetOrJoinTenant": "https://b2crestapis.azurewebsites.net/tenant/member",
     "RestGetTenantsForUser": "https://mrmtrestapi.azurewebsites.net/tenant/gettenantsforuser",
     "RestGetFirstTenant": "https://b2crestapis.azurewebsites.net/tenant/first",

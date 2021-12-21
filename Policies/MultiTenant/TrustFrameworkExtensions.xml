@@ -226,22 +226,22 @@
           <Metadata>
             <Item Key="ServiceUrl">{RestGetTenantsForUser}</Item>
             <Item Key="AuthenticationType">ClientCertificate</Item>
-            <Item Key="SendClaimsIn">Body</Item>
+            <Item Key="SendClaimsIn">QueryString</Item>
             <!--Item Key="AllowInsecureAuthInProduction">true</Item-->            
           </Metadata>
           <CryptographicKeys>
             <Key Id="ClientCertificate" StorageReferenceId="B2C_1A_RESTClientCert" />
           </CryptographicKeys>
           <InputClaims>
-            <InputClaim ClaimTypeReferenceId="appTenantName" PartnerClaimType="tenantName" DefaultValue="{OAUTH-KV:tenant}" />
-            <InputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="userId" />
+            <InputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="userId" />            
+            <InputClaim ClaimTypeReferenceId="appTenantName" PartnerClaimType="tenantName" DefaultValue="{OAUTH-KV:tenant}" AlwaysUseDefaultValue="true" />
             <InputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="local" />
             <InputClaim ClaimTypeReferenceId="tenantId" PartnerClaimType="directoryId" DefaultValue="" />                 
           </InputClaims>
           <OutputClaims>
             <OutputClaim ClaimTypeReferenceId="appTenantId" PartnerClaimType="tenantId" />
             <OutputClaim ClaimTypeReferenceId="appTenantRoles" PartnerClaimType="roles" />
-            <OutputClaim ClaimTypeReferenceId="appTenantName" PartnerClaimType="name" />
+            <OutputClaim ClaimTypeReferenceId="appTenantName" PartnerClaimType="tenantName" />
             <OutputClaim ClaimTypeReferenceId="newUser" />            
             <OutputClaim ClaimTypeReferenceId="requireMFA" />
             <OutputClaim ClaimTypeReferenceId="allTenants" />     
