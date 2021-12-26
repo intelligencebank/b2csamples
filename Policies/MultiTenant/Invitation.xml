@@ -82,6 +82,7 @@
         <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-Email">
           <Metadata>
             <Item Key="UserMessageIfClaimsTransformationStringsAreNotEqual">Invitation is for a different email address.</Item>
+            <Item Key="IncludeClaimResolvingInClaimsHandling">true</Item>
           </Metadata>
           <InputClaimsTransformations>
             <InputClaimsTransformation ReferenceId="CopyInvitedEmailToSignInName" />
