@@ -164,7 +164,7 @@
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
               <Value>identityProvider</Value>
-              <Value>commonaad</Value>
+              <Value>aadOrganizations</Value>
               <Action>SkipThisOrchestrationStep</Action>              
             </Precondition>
           </Preconditions>          
@@ -176,7 +176,7 @@
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
               <Value>identityProvider</Value>
-              <Value>commonaad</Value>
+              <Value>aadOrganizations</Value>
               <Action>SkipThisOrchestrationStep</Action>    
             </Precondition>
           </Preconditions>          

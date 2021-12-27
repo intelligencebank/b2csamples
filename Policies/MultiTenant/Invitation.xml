@@ -116,7 +116,7 @@
       </TechnicalProfiles>
     </ClaimsProvider>
     <ClaimsProvider>
-      <Domain>google.com</Domain>
+      <Domain>gmail.com</Domain>
       <DisplayName>Google</DisplayName>
       <TechnicalProfiles>
         <TechnicalProfile Id="Google-OAUTH"> 

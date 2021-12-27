@@ -81,11 +81,7 @@
         <DataType>boolean</DataType>
       </ClaimType>             
     </ClaimsSchema>
-    <ContentDefinitions>
-      <ContentDefinition Id="api.signuporsignin">
-        <DataUri>urn:com:microsoft:aad:b2c:elements:contract:unifiedssp:2.1.2</DataUri>
-      </ContentDefinition>
-    </ContentDefinitions>    
+  
     <Localization Enabled="true">
       <SupportedLanguages DefaultLanguage="en" MergeBehavior="ReplaceAll">
         <SupportedLanguage>en</SupportedLanguage>
@@ -196,30 +192,6 @@
           </OutputClaims>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
         </TechnicalProfile>
-        <TechnicalProfile Id="REST-GetFirstTenant">
-          <DisplayName>Get first tenant for a user member</DisplayName>
-          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
-          <Metadata>
-            <Item Key="ServiceUrl">{RestGetFirstTenant}</Item>
-            <Item Key="AuthenticationType">ClientCertificate</Item>
-            <Item Key="SendClaimsIn">QueryString</Item>
-            <!--Item Key="AllowInsecureAuthInProduction">true</Item-->            
-          </Metadata>
-          <CryptographicKeys>
-            <Key Id="ClientCertificate" StorageReferenceId="B2C_1A_RESTClientCert" />
-          </CryptographicKeys>
-          <InputClaims>
-            <InputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="userId" />
-          </InputClaims>
-          <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="appTenantId" PartnerClaimType="tenantId" />
-            <OutputClaim ClaimTypeReferenceId="appTenantName" PartnerClaimType="name" />            
-            <OutputClaim ClaimTypeReferenceId="appTenantRoles" PartnerClaimType="roles" />
-            <OutputClaim ClaimTypeReferenceId="requireMFA" />            
-            <OutputClaim ClaimTypeReferenceId="allTenants" />      
-          </OutputClaims>
-          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
-        </TechnicalProfile>   
         <TechnicalProfile Id="REST-GetTenantsForUser">
           <DisplayName>Get user role</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
@@ -276,7 +248,7 @@
     </ClaimsProvider>
 
     <ClaimsProvider>
-      <Domain>google.com</Domain>
+      <Domain>gmail.com</Domain>
       <DisplayName>Google</DisplayName>
       <TechnicalProfiles>
         <TechnicalProfile Id="Google-OAUTH">
@@ -324,7 +296,7 @@
       </TechnicalProfiles>
     </ClaimsProvider>
     <ClaimsProvider>
-      <Domain>commonaad</Domain>
+      <Domain>aadOrganizations</Domain>
       <DisplayName>Common AAD</DisplayName>
       <TechnicalProfiles>
         <TechnicalProfile Id="Common-AAD">
@@ -332,7 +304,7 @@
           <Description>Login with your work or school account</Description>
           <Protocol Name="OpenIdConnect"/>
           <Metadata>
-            <Item Key="METADATA">https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration</Item>
+            <Item Key="METADATA">https://login.microsoftonline.com/organizations/v2.0/.well-known/openid-configuration</Item>
             <!-- Update the Client ID below to the Application ID -->
             <Item Key="client_id">{AADCommonAppId}</Item>
             <Item Key="response_types">code</Item>
@@ -358,7 +330,7 @@
             <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="preferred_username" />
             <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" AlwaysUseDefaultValue="true" />
             <!--OutputClaim ClaimTypeReferenceId="identityProvider" PartnerClaimType="iss" /-->
-            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="commonaad" />
+            <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="aadOrganizations" />
           </OutputClaims>
           <OutputClaimsTransformations>
             <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName"/>

@@ -54,9 +54,9 @@
           <EnabledForUserJourneys>Always</EnabledForUserJourneys>
         </TechnicalProfile>    
         <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-Email">
-          <ValidationTechnicalProfiles>
-            <ValidationTechnicalProfile ReferenceId="login-NonInteractive" />            
-          </ValidationTechnicalProfiles>
+          <Metadata>
+            <Item Key="setting.showSignupLink">false</Item>
+          </Metadata>
         </TechnicalProfile>  
         <TechnicalProfile Id="REST-IsSignupAllowed">
           <DisplayName>Does this tenant allow users t signup</DisplayName>
@@ -111,8 +111,19 @@
             <ClaimsExchange Id="GoogleExchange" TechnicalProfileReferenceId="Google-OAUTH" />    
             <ClaimsExchange Id="ForgotPasswordExchange" TechnicalProfileReferenceId="ForgotPassword" />                  
           </ClaimsExchanges>
-        </OrchestrationStep>          
-        <OrchestrationStep Order="3" Type="ClaimsExchange">
+        </OrchestrationStep>  
+        <OrchestrationStep Order="3" Type="InvokeSubJourney">
+          <Preconditions>
+            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
+              <Value>isForgotPassword</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <JourneyList>
+            <Candidate SubJourneyReferenceId="PasswordReset" />
+          </JourneyList>
+        </OrchestrationStep>                   
+        <OrchestrationStep Order="4" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
               <Value>authenticationSource</Value>
@@ -124,7 +135,7 @@
             <ClaimsExchange Id="AADUserReadUsingAlternativeSecurityId" TechnicalProfileReferenceId="AAD-UserReadUsingAlternativeSecurityId-NoError" />
           </ClaimsExchanges>
         </OrchestrationStep>
-        <OrchestrationStep Order="4" Type="ClaimsExchange">
+        <OrchestrationStep Order="5" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
               <Value>objectId</Value>
@@ -135,7 +146,7 @@
             <ClaimsExchange Id="IsSignUpAllowed" TechnicalProfileReferenceId="REST-IsSignupAllowed" />
           </ClaimsExchanges>
         </OrchestrationStep>         
-        <OrchestrationStep Order="5" Type="ClaimsExchange">
+        <OrchestrationStep Order="6" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
               <Value>objectId</Value>
@@ -151,17 +162,6 @@
             <ClaimsExchange Id="BlockNewSocialUser" TechnicalProfileReferenceId="ShowBlockPage" />
           </ClaimsExchanges>
         </OrchestrationStep>        
-        <OrchestrationStep Order="6" Type="InvokeSubJourney">
-          <Preconditions>
-            <Precondition Type="ClaimsExist" ExecuteActionsIf="false">
-              <Value>isForgotPassword</Value>
-              <Action>SkipThisOrchestrationStep</Action>
-            </Precondition>
-          </Preconditions>
-          <JourneyList>
-            <Candidate SubJourneyReferenceId="PasswordReset" />
-          </JourneyList>
-        </OrchestrationStep>                    
         <OrchestrationStep Order="7" Type="ClaimsExchange">
           <ClaimsExchanges>
             <ClaimsExchange Id="GetTenantData" TechnicalProfileReferenceId="REST-GetTenantsForUser" />
@@ -172,7 +172,7 @@
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="false">
               <Value>identityProvider</Value>
-              <Value>commonaad</Value>              
+              <Value>aadOrganizations</Value>              
               <Action>SkipThisOrchestrationStep</Action>
             </Precondition>
           </Preconditions>
@@ -258,6 +258,9 @@
 
   <RelyingParty>
     <DefaultUserJourney ReferenceId="SignIn" />
+    <UserJourneyBehaviors>
+      <ScriptExecution>Allow</ScriptExecution>
+    </UserJourneyBehaviors>    
     <TechnicalProfile Id="PolicyProfile">
       <DisplayName>PolicyProfile</DisplayName>
       <Protocol Name="OpenIdConnect" />
@@ -265,7 +268,7 @@
         <OutputClaim ClaimTypeReferenceId="displayName" />
         <OutputClaim ClaimTypeReferenceId="givenName" />
         <OutputClaim ClaimTypeReferenceId="surname" />
-        <OutputClaim ClaimTypeReferenceId="email" />
+        <OutputClaim ClaimTypeReferenceId="signInName" PartnerClaimType="upn" />
         <OutputClaim ClaimTypeReferenceId="objectId" PartnerClaimType="sub"/>
         <OutputClaim ClaimTypeReferenceId="tenantId" AlwaysUseDefaultValue="true" DefaultValue="{Policy:TenantObjectId}" />        
         <OutputClaim ClaimTypeReferenceId="appTenantName" />
