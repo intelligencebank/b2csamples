@@ -199,6 +199,7 @@
             <Item Key="ServiceUrl">{RestGetTenantsForUser}</Item>
             <Item Key="AuthenticationType">ClientCertificate</Item>
             <Item Key="SendClaimsIn">QueryString</Item>
+            <Item Key="IncludeClaimResolvingInClaimsHandling">true</Item>
             <!--Item Key="AllowInsecureAuthInProduction">true</Item-->            
           </Metadata>
           <CryptographicKeys>
